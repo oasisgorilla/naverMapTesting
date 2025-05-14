@@ -1,0 +1,49 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>관광지 경로 안내</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+    button { font-size: 20px; padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <h1>관광지 경로 안내</h1>
+  <button onclick="navigate()">관광지 경로</button>
+
+  <script>
+    const DEST_NAME = "경복궁";
+    const DEST_LAT = 37.579617;
+    const DEST_LNG = 126.977041;
+
+    function navigate() {
+      if (!navigator.geolocation) {
+        alert("현재 위치를 가져올 수 없습니다.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition((position) => {
+        const slat = position.coords.latitude;
+        const slng = position.coords.longitude;
+        const sname = "현재 위치";
+
+        const isMobile = /iPhone|Android/i.test(navigator.userAgent);
+
+        if (isMobile) {
+          // 네이버 지도 앱 호출
+          const appUrl = `nmap://route/public?slat=${slat}&slng=${slng}&sname=${encodeURIComponent(sname)}&dlat=${DEST_LAT}&dlng=${DEST_LNG}&dname=${encodeURIComponent(DEST_NAME)}&appname=myapp`;
+          window.location.href = appUrl;
+        } else {
+          // 웹으로 연결
+          const webUrl = `https://map.naver.com/v5/directions/${slng},${slat},${encodeURIComponent(sname)}/${DEST_LNG},${DEST_LAT},${encodeURIComponent(DEST_NAME)}`;
+          window.open(webUrl, "_blank");
+        }
+      }, (err) => {
+        alert("위치 정보를 가져올 수 없습니다: " + err.message);
+      });
+    }
+  </script>
+</body>
+</html>

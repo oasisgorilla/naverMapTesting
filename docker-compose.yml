@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: tourist-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    entrypoint: ""
+    command: > 
+      sh -c "certbot certonly --webroot -w /var/www/certbot 
+      --email yongjae0522@gmail.com --agree-tos --no-eff-email 
+      -d oasisgorilla.ddns.net"
